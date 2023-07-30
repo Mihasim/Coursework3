@@ -1,4 +1,5 @@
 import json
+import datetime
 
 
 def load_operaion():
@@ -8,7 +9,7 @@ def load_operaion():
 
 class Operations:
 
-    def __init__(self, date, description, to_card, amount, name, state, from_card="Неизвестно откуда"):
+    def __init__(self, date, description, to_card, amount, name, state, from_card=None):
         self.date = date
         self.description = description
         self.from_card = from_card
@@ -28,7 +29,7 @@ class Operations:
             self.print_operation()
 
     def __repr__(self):
-        return f""
+        return f"{self.date, self.description, self.from_card, self.to_card, self.amount, self.name, self.state}"
 
 
 def write_operations():
@@ -36,6 +37,8 @@ def write_operations():
     for operation in load_operaion():
         if "date" in operation:
             date = operation["date"]
+            #Переводим дату в необходимый формат
+            date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%y")
 
         if "description" in operation:
             description = operation["description"]
@@ -60,7 +63,4 @@ def write_operations():
         operations.append(Operations(date, description, to_card, amount, name, state, from_card))
     return operations
 
-operations = write_operations()
-for operation in operations:
-    if operation.get_state()!= None:
-        print(operation.get_state())
+
