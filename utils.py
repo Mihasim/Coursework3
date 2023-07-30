@@ -27,6 +27,9 @@ class Operations:
         if self.state == "EXECUTED":
             self.print_operation()
 
+    def __repr__(self):
+        return f""
+
 
 def write_operations():
     operations = []
