@@ -3,6 +3,10 @@ import datetime
 
 
 def load_operaion():
+    """
+    Загрузка данных из файла operations.json
+    :return: список словарей
+    """
     with open("operations.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
@@ -20,11 +24,18 @@ class Operations:
 
 
     def print_operation(self):
+        """
+        Выводит на экран форму вывода
+        """
         print(f"{self.date} {self.description} \n"
               f"{self.from_card} -> {self.to_card}\n"
               f"{self.amount} {self.name}\n")
 
     def get_state(self):
+        """
+        Отбирает только исполненные операции
+        :return:
+        """
         if self.state == "EXECUTED":
             self.print_operation()
 
@@ -33,33 +44,25 @@ class Operations:
 
 
 def write_operations():
+    """
+    Получаем данные об операциях из файла operations.json и добавляем их в экземпляр класса Operations
+    :return: список экземпляров класса Operations
+    """
     operations = []
     for operation in load_operaion():
-        if "date" in operation:
-            date = operation["date"]
-            #Переводим дату в необходимый формат
-            date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%y")
-
-        if "description" in operation:
-            description = operation["description"]
-
+        date = operation["date"]
+        #Переводим дату в необходимый формат
+        date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%Y")
+        description = operation["description"]
+        #проверяем производится перевод или открытие вклада
         if "from" in operation:
             from_card = operation["from"]
         else:
             from_card = "Открытие вклада"
-
-        if "to" in operation:
-            to_card = operation["to"]
-
-        if "operationAmount" in operation:
-            amount = operation["operationAmount"]["amount"]
-
-        if "operationAmount" in operation:
-            name = operation["operationAmount"]["currency"]["name"]
-
-        if "state" in operation:
-            state = operation["state"]
-
+        to_card = operation["to"]
+        amount = operation["operationAmount"]["amount"]
+        name = operation["operationAmount"]["currency"]["name"]
+        state = operation["state"]
         operations.append(Operations(date, description, to_card, amount, name, state, from_card))
     return operations
 
