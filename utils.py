@@ -63,6 +63,27 @@ class Operations:
         return f"{self.date, self.description, self.from_card, self.to_card, self.amount, self.name, self.state}"
 
 
+def mask(kode):
+    """
+    Маскирует данные карты
+    :return: название и замаскированный номер в виде строки
+    """
+    list_kode = kode.split()
+    kard_words = []
+    for kode in list_kode:
+
+        if kode.isalpha():
+            kard_words.append(kode)
+
+        if kode.isdigit():
+            pices = [kode[i:i+4] for i in range(0, len(kode), 4)]
+            whole = " ".join(pices)
+            whole = whole[0:7] + "** **** " + whole[-4:len(whole)]
+
+    whole_word = " ".join(kard_words)
+    whole_kode = f"{whole_word} {whole}"
+    return whole_kode
+
 def write_operations():
     """
     Получаем данные об операциях из файла operations.json и добавляем их в экземпляр класса Operations
@@ -70,18 +91,16 @@ def write_operations():
     """
     operations = []
     for operation in get_five():
-        if "date" in operation:
-            date = operation["date"]
-        else: print("Z"*1000)
+        date = operation["date"]
         #Переводим дату в необходимый формат
         date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%Y")
         description = operation["description"]
         #проверяем производится перевод или открытие вклада
         if "from" in operation:
-            from_card = operation["from"]
+            from_card = mask(operation["from"])
         else:
             from_card = "Открытие вклада"
-        to_card = operation["to"]
+        to_card = mask(operation["to"])
         amount = operation["operationAmount"]["amount"]
         name = operation["operationAmount"]["currency"]["name"]
         state = operation["state"]
