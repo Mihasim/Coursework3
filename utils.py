@@ -11,6 +11,16 @@ def load_operaion():
         return json.load(file)
 
 
+def sort_operations():
+    """
+    сортировка списка словарей по дате
+    :return: список словарей
+    """
+    sorted_operation = load_operaion()
+    sorted_operation = sorted(sorted_operation, key=lambda k: k['date'], reverse=True)
+    return sorted_operation
+
+
 class Operations:
 
     def __init__(self, date, description, to_card, amount, name, state, from_card=None):
@@ -49,8 +59,10 @@ def write_operations():
     :return: список экземпляров класса Operations
     """
     operations = []
-    for operation in load_operaion():
-        date = operation["date"]
+    for operation in sort_operations():
+        if "date" in operation:
+            date = operation["date"]
+        else: print("Z"*1000)
         #Переводим дату в необходимый формат
         date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%Y")
         description = operation["description"]
