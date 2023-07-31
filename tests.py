@@ -1,3 +1,5 @@
+import pytest
+
 import utils
 
 
@@ -30,9 +32,13 @@ def test_get_five():
 def test_mask():
     assert utils.mask("Visa Platinum 1813166339376336") == "Visa Platinum 1813 16** **** 6336"
     assert utils.mask("Maestro 1913883747791351") == "Maestro 1913 88** **** 1351"
+    with pytest.raises(TypeError):
+        utils.mask() == ""
 
 def test_mask_to():
     assert utils.mask_to("Visa Platinum 1813166339376336") == "Visa Platinum **6336"
     assert utils.mask_to("Maestro 1913883747791351") == "Maestro **1351"
+    with pytest.raises(TypeError):
+        utils.mask_to() == ""
 
 
