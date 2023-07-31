@@ -20,6 +20,22 @@ def sort_operations():
     sorted_operation = sorted(sorted_operation, key=lambda k: k['date'], reverse=True)
     return sorted_operation
 
+def get_five():
+    """
+    Получает первые 5 исполненных операций
+    :return:
+    """
+    five_executed_oper = []
+    i = 0
+
+    for operations in sort_operations():
+        if operations["state"] == "EXECUTED":
+            five_executed_oper.append(operations)
+            i += 1
+        if i == 5:
+            break
+    return five_executed_oper
+
 
 class Operations:
 
@@ -41,13 +57,7 @@ class Operations:
               f"{self.from_card} -> {self.to_card}\n"
               f"{self.amount} {self.name}\n")
 
-    def get_state(self):
-        """
-        Отбирает только исполненные операции
-        :return:
-        """
-        if self.state == "EXECUTED":
-            self.print_operation()
+
 
     def __repr__(self):
         return f"{self.date, self.description, self.from_card, self.to_card, self.amount, self.name, self.state}"
@@ -59,7 +69,7 @@ def write_operations():
     :return: список экземпляров класса Operations
     """
     operations = []
-    for operation in sort_operations():
+    for operation in get_five():
         if "date" in operation:
             date = operation["date"]
         else: print("Z"*1000)
