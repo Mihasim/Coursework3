@@ -16,9 +16,15 @@ def sort_operations():
     сортировка списка словарей по дате
     :return: список словарей
     """
-    sorted_operation = load_operaion()
+    #Исключаем пустой словарь
+    sorted_operation = []
+    for operaion in load_operaion():
+        if operaion != {}:
+            sorted_operation.append(operaion)
+
     sorted_operation = sorted(sorted_operation, key=lambda k: k['date'], reverse=True)
     return sorted_operation
+
 
 def get_five():
     """
@@ -59,10 +65,6 @@ class Operations:
 
 
 
-    def __repr__(self):
-        return f"{self.date, self.description, self.from_card, self.to_card, self.amount, self.name, self.state}"
-
-
 def mask(kode):
     """
     Маскирует данные карты
@@ -84,6 +86,23 @@ def mask(kode):
     whole_kode = f"{whole_word} {whole}"
     return whole_kode
 
+def mask_to(kode):
+    list_kode = kode.split()
+    kard_words = []
+    for kode in list_kode:
+
+        if kode.isalpha():
+            kard_words.append(kode)
+
+        if kode.isdigit():
+            pices = [kode[i:i+4] for i in range(0, len(kode), 4)]
+            whole = " ".join(pices)
+            whole = "**" + whole[-4:len(whole)]
+
+    whole_word = " ".join(kard_words)
+    whole_kode = f"{whole_word} {whole}"
+    return whole_kode
+
 def write_operations():
     """
     Получаем данные об операциях из файла operations.json и добавляем их в экземпляр класса Operations
@@ -100,7 +119,7 @@ def write_operations():
             from_card = mask(operation["from"])
         else:
             from_card = "Открытие вклада"
-        to_card = mask(operation["to"])
+        to_card = mask_to(operation["to"])
         amount = operation["operationAmount"]["amount"]
         name = operation["operationAmount"]["currency"]["name"]
         state = operation["state"]
