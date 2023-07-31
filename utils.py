@@ -16,9 +16,31 @@ def sort_operations():
     сортировка списка словарей по дате
     :return: список словарей
     """
-    sorted_operation = load_operaion()
+    #Исключаем пустой словарь
+    sorted_operation = []
+    for operaion in load_operaion():
+        if operaion != {}:
+            sorted_operation.append(operaion)
+
     sorted_operation = sorted(sorted_operation, key=lambda k: k['date'], reverse=True)
     return sorted_operation
+
+
+def get_five():
+    """
+    Получает первые 5 исполненных операций
+    :return:
+    """
+    five_executed_oper = []
+    i = 0
+
+    for operations in sort_operations():
+        if operations["state"] == "EXECUTED":
+            five_executed_oper.append(operations)
+            i += 1
+        if i == 5:
+            break
+    return five_executed_oper
 
 
 class Operations:
@@ -41,17 +63,45 @@ class Operations:
               f"{self.from_card} -> {self.to_card}\n"
               f"{self.amount} {self.name}\n")
 
-    def get_state(self):
-        """
-        Отбирает только исполненные операции
-        :return:
-        """
-        if self.state == "EXECUTED":
-            self.print_operation()
 
-    def __repr__(self):
-        return f"{self.date, self.description, self.from_card, self.to_card, self.amount, self.name, self.state}"
 
+def mask(kode):
+    """
+    Маскирует данные карты
+    :return: название и замаскированный номер в виде строки
+    """
+    list_kode = kode.split()
+    kard_words = []
+    for kode in list_kode:
+
+        if kode.isalpha():
+            kard_words.append(kode)
+
+        if kode.isdigit():
+            pices = [kode[i:i+4] for i in range(0, len(kode), 4)]
+            whole = " ".join(pices)
+            whole = whole[0:7] + "** **** " + whole[-4:len(whole)]
+
+    whole_word = " ".join(kard_words)
+    whole_kode = f"{whole_word} {whole}"
+    return whole_kode
+
+def mask_to(kode):
+    list_kode = kode.split()
+    kard_words = []
+    for kode in list_kode:
+
+        if kode.isalpha():
+            kard_words.append(kode)
+
+        if kode.isdigit():
+            pices = [kode[i:i+4] for i in range(0, len(kode), 4)]
+            whole = " ".join(pices)
+            whole = "**" + whole[-4:len(whole)]
+
+    whole_word = " ".join(kard_words)
+    whole_kode = f"{whole_word} {whole}"
+    return whole_kode
 
 def write_operations():
     """
@@ -59,19 +109,17 @@ def write_operations():
     :return: список экземпляров класса Operations
     """
     operations = []
-    for operation in sort_operations():
-        if "date" in operation:
-            date = operation["date"]
-        else: print("Z"*1000)
+    for operation in get_five():
+        date = operation["date"]
         #Переводим дату в необходимый формат
         date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f").strftime("%d.%m.%Y")
         description = operation["description"]
         #проверяем производится перевод или открытие вклада
         if "from" in operation:
-            from_card = operation["from"]
+            from_card = mask(operation["from"])
         else:
             from_card = "Открытие вклада"
-        to_card = operation["to"]
+        to_card = mask_to(operation["to"])
         amount = operation["operationAmount"]["amount"]
         name = operation["operationAmount"]["currency"]["name"]
         state = operation["state"]
